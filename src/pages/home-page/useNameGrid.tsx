@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChipListRenderer } from "src/ag-grid/cellRenderer/ChipListRenderer";
 import { dateTimeFormatter } from "src/ag-grid/valueFormatter/dateTimeFormatter";
 import { dateFilterComparator } from "src/ag-grid/comparator/dateFilterComparator";
-import { useName } from "src/hooks/useName";
 import { getDefaultColDef } from "src/ag-grid/getDefaultColDef";
 import type {
   ColDef,
@@ -12,25 +11,23 @@ import type {
   GridApi,
   GridOptions,
   GridReadyEvent,
-  MenuItemDef,
   ProcessCellForExportParams,
 } from "ag-grid-community";
 import type { AgGridReact as AgGridReactType } from "ag-grid-react";
 import type { NameType } from "src/types/name";
 import { themeBalham } from 'ag-grid-community';
+import { useGetNamesQuery } from 'src/store/api/nameApi';
 
 export const useNameGrid = () => {
   const gridRef = useRef<AgGridReactType>(null);
-  const { isLoading } = useName();
   const [gridApi, setGridApi] = useState<GridApi | undefined>(undefined);
   const theme = themeBalham.withParams({  });
 
+  // RTK Queryを使用してデータを取得
+  const { data: names, isLoading } = useGetNamesQuery();
+
   // GRID SETTINGS
   // ================================================================================
-
-  // ROWDATA:グリッドに表示するデータ
-  // ----------------------------------------
-  const { names } = useName();
 
   // DEFAULT COLDEF: 全カラム共通の定義
   // ----------------------------------------
@@ -152,8 +149,6 @@ export const useNameGrid = () => {
           gridApi.showNoRowsOverlay();
         }
       }
-    } else {
-      // do nothing
     }
   }, [gridApi, isLoading, names]);
 
